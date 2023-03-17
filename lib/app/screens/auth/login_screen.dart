@@ -1,26 +1,24 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_unnecessary_containers, use_build_context_synchronously
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:online_medicine/app/data/api/url_api.dart';
 import 'package:online_medicine/app/screens/screen.dart';
-import 'package:online_medicine/app/theme/theme.dart';
-import 'package:http/http.dart' as http;
+import '../../theme/theme.dart';
+import '../../widget/custom_text_field.dart';
 import '../../widget/widget.dart';
+import 'package:http/http.dart' as http;
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController fullNameController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
   bool _seceryText = true;
   showHide() {
     setState(() {
@@ -28,15 +26,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  registerSubmit() async {
-    var registerUrl = Uri.parse(BASEURL.apiRegister);
-    final response = await http.post(registerUrl, body: {
-      'fullName': fullNameController.text,
-      'email': emailController.text,
-      'phone': phoneController.text,
-      'address': addressController.text,
-      'password': passwordController.text,
-    });
+  submitLogin() async {
+    var urlLogin = Uri.parse(BASEURL.apiLogin);
+    final response = await http.post(
+      urlLogin,
+      body: {
+        "email": emailController.text,
+        "password": passwordController.text,
+      },
+    );
     final data = jsonDecode(response.body);
     int value = data['value'];
     String message = data['message'];
@@ -53,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
+                      builder: (context) => const MainScreen(),
                     ),
                     (route) => false);
               },
@@ -65,6 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {});
     } else {
       showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
           title: const Text("Information"),
@@ -96,27 +95,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(
+                  height: 100,
+                ),
                 Text(
-                  'Register',
+                  'LogIn',
                   style: regularTextStyle.copyWith(fontSize: 25),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'Register new your account',
+                  'LogIn into your account',
                   style: regularTextStyle.copyWith(
                       fontSize: 15, color: greyLightColor),
                 ),
                 const SizedBox(
                   height: 20,
-                ),
-                CustomTextField(
-                  controller: fullNameController,
-                  hintText: 'Full Name',
-                ),
-                const SizedBox(
-                  height: 25,
                 ),
                 CustomTextField(
                   controller: emailController,
@@ -126,21 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 25,
                 ),
                 CustomTextField(
-                  controller: phoneController,
-                  hintText: 'Phone',
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                CustomTextField(
-                  controller: addressController,
-                  hintText: 'Home Address',
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                CustomTextField(
                   controller: passwordController,
+                  obscureText: _seceryText,
                   suffixIcon: IconButton(
                     onPressed: showHide,
                     icon: _seceryText
@@ -151,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Icons.visibility_off,
                           ),
                   ),
-                  obscureText: _seceryText,
+                  // obscureText: _seceryText,
                   hintText: 'Password',
                 ),
                 const SizedBox(
@@ -160,12 +142,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: ButtonPrimary(
-                    text: "Register",
+                    text: "LogIn",
                     onTap: () {
-                      if (fullNameController.text.isEmpty ||
-                          emailController.text.isEmpty ||
-                          phoneController.text.isEmpty ||
-                          addressController.text.isEmpty ||
+                      if (emailController.text.isEmpty ||
                           passwordController.text.isEmpty) {
                         showDialog(
                           context: context,
@@ -183,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         );
                       } else {
-                        registerSubmit();
+                        submitLogin();
                       }
                     },
                   ),
@@ -195,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account? ',
+                      "Don't have an account? ",
                       style: lightTextStyle.copyWith(
                           fontSize: 15, color: greyLightColor),
                     ),
@@ -204,12 +183,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
+                              builder: (context) => const RegisterScreen(),
                             ),
                             (route) => false);
                       },
                       child: Text(
-                        'Login Now',
+                        'Create Account',
                         style: boldTextStyle.copyWith(
                             fontSize: 15, color: greenColor),
                       ),
