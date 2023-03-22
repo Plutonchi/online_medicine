@@ -1,11 +1,11 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_unnecessary_containers, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api, avoid_unnecessary_containers, use_build_context_synchronously, avoid_print
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:online_medicine/app/data/api/url_api.dart';
+import 'package:online_medicine/app/data/model/model.dart';
 import 'package:online_medicine/app/screens/screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/theme.dart';
-import '../../widget/custom_text_field.dart';
 import '../../widget/widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -38,7 +38,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final data = jsonDecode(response.body);
     int value = data['value'];
     String message = data['message'];
+    String idUser = data['user_id'];
+    String name = data['name'];
+    String email = data['email'];
+    String phone = data['phone'];
+    String address = data['address'];
+    String createdAt = data['created_at'];
+
     if (value == 1) {
+      savePref(idUser, name, email, phone, address, createdAt);
       showDialog(
         barrierDismissible: false,
         context: context,
@@ -54,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       builder: (context) => const MainScreen(),
                     ),
                     (route) => false);
+                print(name);
               },
               child: const Text("OK"),
             ),
@@ -81,6 +90,27 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     setState(() {});
   }
+
+  savePref(
+    String idUser,
+    String name,
+    String email,
+    String phone,
+    String address,
+    String createdAt,
+  ) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      sharedPreferences.setString(PrefProfile.idUSer, idUser);
+      sharedPreferences.setString(PrefProfile.name, name);
+      sharedPreferences.setString(PrefProfile.phone, phone);
+      sharedPreferences.setString(PrefProfile.email, email);
+      sharedPreferences.setString(PrefProfile.address, address);
+      sharedPreferences.setString(PrefProfile.cretedAt, createdAt);
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

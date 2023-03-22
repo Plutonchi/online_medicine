@@ -5,3 +5,5 @@ export 'main/main_screen.dart';
 export 'home/home_screen.dart';
 export 'history/history_screen.dart';
 export 'profile/profile_screen.dart';
+export 'search/search_product.dart';
+export 'detail/detail_product.dart';

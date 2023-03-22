@@ -18,12 +18,14 @@ class CardCategory extends StatelessWidget {
         Image.asset(
           imageCategory,
           width: 65,
+          fit: BoxFit.cover,
         ),
         const SizedBox(
           height: 7,
         ),
         Text(
           nameCategory,
+          textAlign: TextAlign.center,
           style: mediumTextStyle.copyWith(fontSize: 15),
         ),
       ],

@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:online_medicine/app/theme/theme.dart';
 
 class CardProduct extends StatelessWidget {
@@ -14,6 +17,7 @@ class CardProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final priceFormat = NumberFormat("#,##0", "en_US");
     return Container(
       decoration: BoxDecoration(
         color: whiteColor,
@@ -23,22 +27,27 @@ class CardProduct extends StatelessWidget {
         children: [
           Image.network(
             imageProduct,
-            width: 115,
-            height: 76,
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Text(
-            nameProduct,
-            textAlign: TextAlign.center,
-            style: regularTextStyle,
+            width: 120,
+            height: 70,
+            fit: BoxFit.cover,
           ),
           const SizedBox(
             height: 14,
           ),
           Text(
-            price,
+            nameProduct,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: regularTextStyle,
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Text(
+            "KGS  " +
+                priceFormat.format(
+                  int.parse(price),
+                ),
             style: boldTextStyle,
           ),
         ],

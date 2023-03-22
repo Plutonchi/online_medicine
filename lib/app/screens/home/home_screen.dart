@@ -1,10 +1,9 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_print
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:online_medicine/app/data/api/url_api.dart';
 import 'package:online_medicine/app/data/model/product_model.dart/product_model.dart';
+import 'package:online_medicine/app/screens/screen.dart';
 import 'package:online_medicine/app/theme/theme.dart';
 import 'package:online_medicine/app/widget/widget.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int? index;
+  bool filter = false;
   List<CategoryWithProduct> listCategory = [];
   getCategory() async {
     listCategory.clear();
@@ -25,11 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (response.statusCode == 200) {
       setState(() {
         final data = jsonDecode(response.body);
-        for (Map item in data) {
+        for (Map<String, dynamic> item in data) {
           listCategory.add(
             CategoryWithProduct.fromJson(item),
           );
-          print(listCategory[0].category);
         }
       });
       getProduct();
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (response.statusCode == 200) {
       setState(() {
         final data = jsonDecode(response.body);
-        for (Map product in data) {
+        for (Map<String, dynamic> product in data) {
           listProduct.add(
             ProductModel.fromJson(product),
           );
@@ -102,25 +102,37 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 25,
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              height: 55,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color(
-                  0xffe4faf0,
-                ),
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  prefixIcon: const Icon(
-                    Icons.search_outlined,
-                    color: Color(0xffb1d8b2),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchProduct(),
                   ),
-                  hintText: "Search medicine ...",
-                  hintStyle: regularTextStyle.copyWith(
-                    color: const Color(0xffb0d8b2),
+                );
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                height: 55,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(
+                    0xffe4faf0,
+                  ),
+                ),
+                child: TextField(
+                  enabled: false,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    prefixIcon: const Icon(
+                      Icons.search_outlined,
+                      color: Color(0xffb1d8b2),
+                    ),
+                    hintText: "Search medicine ...",
+                    hintStyle: regularTextStyle.copyWith(
+                      color: const Color(0xffb0d8b2),
+                    ),
                   ),
                 ),
               ),
@@ -143,33 +155,85 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisExtent: 111, crossAxisCount: 4),
               itemBuilder: (context, i) {
                 final x = listCategory[i];
-                return CardCategory(
-                  imageCategory: x.image,
-                  nameCategory: x.category,
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      index = i;
+                      filter = true;
+                      print("$index, $filter");
+                    });
+                  },
+                  child: CardCategory(
+                    imageCategory: x.image,
+                    nameCategory: x.category,
+                  ),
                 );
               },
             ),
             const SizedBox(
               height: 35,
             ),
-            GridView.builder(
-              physics: const ClampingScrollPhysics(),
-              itemCount: listProduct.length,
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemBuilder: (context, i) {
-                final y = listProduct[i];
-                return CardProduct(
-                  imageProduct: y.imageProduct,
-                  nameProduct: y.nameProduct,
-                  price: y.price,
-                );
-              },
-            ),
+            filter
+                ? index == 7
+                    ? const Text("Feature on proggress")
+                    : GridView.builder(
+                        physics: const ClampingScrollPhysics(),
+                        itemCount: listCategory[index!].product.length,
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 20,
+                        ),
+                        itemBuilder: (context, i) {
+                          final y = listCategory[index!].product[i];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailProduct(y),
+                                ),
+                              );
+                            },
+                            child: CardProduct(
+                              imageProduct: y.imageProduct,
+                              nameProduct: y.nameProduct,
+                              price: y.price,
+                            ),
+                          );
+                        },
+                      )
+                : GridView.builder(
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: listProduct.length,
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 20,
+                    ),
+                    itemBuilder: (context, i) {
+                      final y = listProduct[i];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailProduct(y),
+                            ),
+                          );
+                        },
+                        child: CardProduct(
+                          imageProduct: y.imageProduct,
+                          nameProduct: y.nameProduct,
+                          price: y.price,
+                        ),
+                      );
+                    },
+                  ),
           ],
         ),
       ),

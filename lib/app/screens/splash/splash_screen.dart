@@ -1,9 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:online_medicine/app/screens/screen.dart';
 import 'package:online_medicine/app/widget/widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SplashScreen extends StatelessWidget {
+import '../../data/model/model.dart';
+
+class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  String? userID;
+  getPref() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    userID = sharedPreferences.getString(PrefProfile.idUSer);
+    userID == null ? sessionsLogout() : sessionsLogin();
+  }
+
+  sessionsLogout() {}
+  sessionsLogin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MainScreen(),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    getPref();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +56,7 @@ class SplashScreen extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RegisterScreen(),
+                      builder: (context) => const LoginScreen(),
                     ),
                   );
                 },
