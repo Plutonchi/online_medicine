@@ -29,6 +29,7 @@ class WidgetIlustration extends StatelessWidget {
         Image.asset(
           image.toString(),
           width: 250,
+          fit: BoxFit.cover,
         ),
         const SizedBox(
           height: 30,

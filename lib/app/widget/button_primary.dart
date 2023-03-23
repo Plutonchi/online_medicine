@@ -17,7 +17,7 @@ class ButtonPrimary extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         child: Text(
-          text,
+          text.toUpperCase(),
           style: regularTextStyle.copyWith(
             fontSize: 20,
           ),

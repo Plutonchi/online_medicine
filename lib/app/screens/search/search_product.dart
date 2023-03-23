@@ -113,7 +113,7 @@ class _SearchProductState extends State<SearchProduct> {
             ),
             searchController.text.isEmpty || listSearchProduct.length == 0
                 ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 70),
                     child: WidgetIlustration(
                       image: 'assets/images/no_data_ilustration.png',
                       title: "There is no medicine that is looking for",

@@ -91,7 +91,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CartScreen(),
+                      ),
+                    );
+                  },
                   icon: Icon(
                     Icons.shopping_cart_outlined,
                     color: greenColor,

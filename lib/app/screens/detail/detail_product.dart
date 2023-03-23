@@ -1,10 +1,16 @@
-// ignore_for_file: library_private_types_in_public_api, sized_box_for_whitespace, prefer_interpolation_to_compose_strings
+// ignore_for_file: library_private_types_in_public_api, sized_box_for_whitespace, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:online_medicine/app/data/api/url_api.dart';
 import 'package:online_medicine/app/data/model/model.dart';
+import 'package:online_medicine/app/screens/screen.dart';
 import 'package:online_medicine/app/theme/theme.dart';
 import 'package:online_medicine/app/widget/button_primary.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailProduct extends StatefulWidget {
   final ProductModel productModel;
@@ -20,6 +26,76 @@ class DetailProduct extends StatefulWidget {
 
 class _DetailProductState extends State<DetailProduct> {
   final priceFormat = NumberFormat("#,##0", "en_US");
+  String? userDevice;
+  getPref() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      userDevice = sharedPreferences.getString(PrefProfile.idUSer);
+    });
+  }
+
+  addToCart() async {
+    var urlAddToCart = Uri.parse(BASEURL.addToCart);
+    final response = await http.post(
+      urlAddToCart,
+      body: {
+        "id_device": userDevice,
+        "id_product": widget.productModel.idProduct,
+      },
+    );
+    final data = jsonDecode(response.body);
+    int value = data['value'];
+    String message = data['message'];
+    if (value == 1) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Information"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MainScreen(),
+                    ),
+                    (route) => false);
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+      setState(() {});
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Information"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+      print(message);
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    getPref();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +179,9 @@ class _DetailProductState extends State<DetailProduct> {
                     width: MediaQuery.of(context).size.width,
                     child: ButtonPrimary(
                       text: "ADD TO CART",
-                      onTap: () {},
+                      onTap: () {
+                        addToCart();
+                      },
                     ),
                   ),
                 ],
