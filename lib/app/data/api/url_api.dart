@@ -8,4 +8,8 @@ class BASEURL {
   static String addToCart = 'http://$ipAddress/medhealth_db/add_to_cart.php';
   static String getProductCart =
       'http://$ipAddress/medhealth_db/get_cart.php?userID=';
+  static String updateQuantityProduct =
+      'http://$ipAddress/medhealth_db/update_quantity.php';
+  static String totalPrice =
+      'http://$ipAddress/medhealth_db/get_total_price.php?userID=';
 }

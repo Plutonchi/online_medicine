@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, unnecessary_null_comparison, prefer_interpolation_to_compose_strings
+// ignore_for_file: library_private_types_in_public_api, unnecessary_null_comparison, prefer_interpolation_to_compose_strings, avoid_print
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -32,6 +32,7 @@ class _CartScreenState extends State<CartScreen> {
       phone = sharedPreferences.getString(PrefProfile.phone);
     });
     getCart();
+    cartTotalPrice();
   }
 
   List<CartModel> listcart = [];
@@ -46,6 +47,47 @@ class _CartScreenState extends State<CartScreen> {
           listcart.add(CartModel.fromJson(item));
         }
       });
+    }
+  }
+
+  updateQuantity(String tipe, String model) async {
+    var urlUpadteQuantity = Uri.parse(BASEURL.updateQuantityProduct);
+    final response = await http.post(
+      urlUpadteQuantity,
+      body: {
+        "cartID": model,
+        "tipe": tipe,
+      },
+    );
+    final data = jsonDecode(response.body);
+    int value = data['value'];
+    String message = data['message'];
+    if (value == 1) {
+      print(message);
+      setState(() {
+        getPref();
+      });
+    } else {
+      print(message);
+      setState(() {
+        getPref();
+      });
+    }
+  }
+
+  var sumPrice = '0';
+  int totalpayment = 0;
+  cartTotalPrice() async {
+    var totalPrice = Uri.parse(BASEURL.totalPrice + userId!);
+    final responce = await http.get(totalPrice);
+    if (responce.statusCode == 200) {
+      final data = jsonDecode(responce.body);
+      String total = data['Total'];
+      setState(() {
+        sumPrice = total;
+        totalpayment = sumPrice == null ? 0 : int.parse(sumPrice) + delivery;
+      });
+      print(sumPrice);
     }
   }
 
@@ -84,7 +126,10 @@ class _CartScreenState extends State<CartScreen> {
                             fontSize: 16, color: greyBoldColor),
                       ),
                       Text(
-                        "KGS 40,000",
+                        "KGS " +
+                            price.format(
+                              int.parse(sumPrice),
+                            ),
                         style: boldTextStyle.copyWith(fontSize: 16),
                       ),
                     ],
@@ -118,7 +163,7 @@ class _CartScreenState extends State<CartScreen> {
                             fontSize: 16, color: greyBoldColor),
                       ),
                       Text(
-                        "KGS 40,000",
+                        "KGS " + price.format(totalpayment),
                         style: boldTextStyle.copyWith(fontSize: 16),
                       ),
                     ],
@@ -292,7 +337,9 @@ class _CartScreenState extends State<CartScreen> {
                                 Row(
                                   children: [
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        updateQuantity('add', x.idCart);
+                                      },
                                       icon: Icon(
                                         Icons.add_circle,
                                         color: greenColor,
@@ -300,7 +347,9 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                     Text(x.quantity),
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        updateQuantity('remove', x.idCart);
+                                      },
                                       icon: const Icon(
                                         Icons.remove_circle,
                                         color: Color(0xfff0997a),
